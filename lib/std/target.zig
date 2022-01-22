@@ -792,6 +792,7 @@ pub const Target = struct {
             thumb,
             thumbeb,
             i386,
+            x86_16,
             x86_64,
             xcore,
             nvptx,
@@ -820,7 +821,7 @@ pub const Target = struct {
 
             pub fn isX86(arch: Arch) bool {
                 return switch (arch) {
-                    .i386, .x86_64 => true,
+                    .i386, .x86_64, .x86_16 => true,
                     else => false,
                 };
             }
@@ -933,6 +934,7 @@ pub const Target = struct {
                     .thumb => ._ARM,
                     .thumbeb => ._ARM,
                     .i386 => ._386,
+                    .x86_16 => ._386,
                     .xcore => ._XCORE,
                     .nvptx => ._NONE,
                     .amdil => ._NONE,
@@ -994,6 +996,7 @@ pub const Target = struct {
                     .thumb => .Thumb,
                     .thumbeb => .Thumb,
                     .i386 => .I386,
+                    .x86_16 => .I386,
                     .xcore => .Unknown,
                     .nvptx => .Unknown,
                     .amdil => .Unknown,
@@ -1063,6 +1066,7 @@ pub const Target = struct {
                     .riscv32,
                     .riscv64,
                     .i386,
+                    .x86_16,
                     .x86_64,
                     .wasm32,
                     .wasm64,
@@ -1104,6 +1108,7 @@ pub const Target = struct {
                     .avr,
                     .msp430,
                     .spu_2,
+                    .x86_16,
                     => return 16,
 
                     .arc,
@@ -1178,7 +1183,7 @@ pub const Target = struct {
                     .riscv32, .riscv64 => "riscv",
                     .sparc, .sparcv9, .sparcel => "sparc",
                     .s390x => "systemz",
-                    .i386, .x86_64 => "x86",
+                    .i386, .x86_16, .x86_64 => "x86",
                     .nvptx, .nvptx64 => "nvptx",
                     .wasm32, .wasm64 => "wasm",
                     .spirv32, .spirv64 => "spir-v",
@@ -1202,7 +1207,7 @@ pub const Target = struct {
                     .sparc, .sparcv9, .sparcel => &sparc.all_features,
                     .spirv32, .spirv64 => &spirv.all_features,
                     .s390x => &systemz.all_features,
-                    .i386, .x86_64 => &x86.all_features,
+                    .i386, .x86_64, .x86_16 => &x86.all_features,
                     .nvptx, .nvptx64 => &nvptx.all_features,
                     .ve => &ve.all_features,
                     .wasm32, .wasm64 => &wasm.all_features,
@@ -1226,7 +1231,7 @@ pub const Target = struct {
                     .riscv32, .riscv64 => comptime allCpusFromDecls(riscv.cpu),
                     .sparc, .sparcv9, .sparcel => comptime allCpusFromDecls(sparc.cpu),
                     .s390x => comptime allCpusFromDecls(systemz.cpu),
-                    .i386, .x86_64 => comptime allCpusFromDecls(x86.cpu),
+                    .i386, .x86_64, .x86_16 => comptime allCpusFromDecls(x86.cpu),
                     .nvptx, .nvptx64 => comptime allCpusFromDecls(nvptx.cpu),
                     .ve => comptime allCpusFromDecls(ve.cpu),
                     .wasm32, .wasm64 => comptime allCpusFromDecls(wasm.cpu),
@@ -1638,6 +1643,8 @@ pub const Target = struct {
                 .renderscript64,
                 .ve,
                 => return result,
+
+                .x86_16 => @panic("x86_16 doesn't have Linux support"),
             },
 
             .ios,

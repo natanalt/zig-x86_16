@@ -522,6 +522,7 @@ pub fn largestAtomicBits(target: std.Target) u32 {
         .avr,
         .msp430,
         .spu_2,
+        .x86_16, // ?
         => 16,
 
         .arc,

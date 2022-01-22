@@ -468,7 +468,12 @@ pub fn populateMissingMetadata(self: *Elf) !void {
         const p_align = 0x1000;
         const off = self.findFreeSpace(file_size, p_align);
         log.debug("found PT_LOAD free space 0x{x} to 0x{x}", .{ off, off + file_size });
-        const entry_addr: u64 = self.entry_addr orelse if (self.base.options.target.cpu.arch == .spu_2) @as(u64, 0) else default_entry_addr;
+        //const entry_addr: u64 = self.entry_addr orelse if (self.base.options.target.cpu.arch == .spu_2) @as(u64, 0) else default_entry_addr;
+        const entry_addr: u64 = self.entry_addr orelse switch (self.base.options.target.cpu.arch) {
+            .spu_2 => @as(u64, 0),
+            .x86_16 => 0x1000,
+            else => default_entry_addr,
+        };
         try self.program_headers.append(self.base.allocator, .{
             .p_type = elf.PT_LOAD,
             .p_offset = off,
